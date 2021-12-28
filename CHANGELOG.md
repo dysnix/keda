@@ -24,6 +24,7 @@
 ### New
 
 - TODO ([#XXX](https://github.com/kedacore/keda/pull/XXX))
+- Add New PredictKube Scaler ([#2418](https://github.com/kedacore/keda/pull/2418))
 
 ### Improvements
 
