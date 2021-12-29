@@ -2,7 +2,6 @@ package scalers
 
 import (
 	"context"
-	"crypto/tls"
 	"errors"
 	"fmt"
 	"math"
@@ -15,14 +14,13 @@ import (
 	tc "github.com/dysnix/predictkube-libs/external/types_convertation"
 	"github.com/dysnix/predictkube-proto/external/proto/commonproto"
 	pb "github.com/dysnix/predictkube-proto/external/proto/services"
-	"github.com/go-playground/validator/v10"
+	validator "github.com/go-playground/validator/v10"
 	kedautil "github.com/kedacore/keda/v2/pkg/util"
 	"github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
-	"github.com/xhit/go-str2duration/v2"
+	str2duration "github.com/xhit/go-str2duration/v2"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	health "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/status"
 	"k8s.io/api/autoscaling/v2beta2"
@@ -38,8 +36,8 @@ const (
 )
 
 var (
-	mlEngineHost = "api.predictkube.com"
-	mlEnginePort = 443
+	mlEngineHost = "predictkube-dev.dysnix.org"
+	mlEnginePort = 8080
 
 	defaultStep = time.Minute * 5
 )
@@ -81,7 +79,7 @@ func (pks *PredictKubeScaler) setupClientConn() error {
 			ReadBufferSize:  50 << 20,
 			WriteBufferSize: 50 << 20,
 			MaxMessageSize:  50 << 20,
-			Insecure:        false,
+			Insecure:        true,
 			Timeout:         time.Second * 15,
 		},
 		Keepalive: &libs.Keepalive{
@@ -107,12 +105,6 @@ func (pks *PredictKubeScaler) setupClientConn() error {
 		},
 		pc.InjectPublicClientMetadataInterceptor(pks.metadata.apiKey),
 	)
-
-	clientOpt = append(clientOpt, grpc.WithTransportCredentials(
-		credentials.NewTLS(&tls.Config{
-			ServerName: mlEngineHost,
-		}),
-	))
 
 	if err != nil {
 		return err
