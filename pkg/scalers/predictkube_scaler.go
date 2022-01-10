@@ -9,14 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	libs "github.com/dysnix/predictkube-libs/external/configs"
-	pc "github.com/dysnix/predictkube-libs/external/grpc/client"
-	"github.com/dysnix/predictkube-libs/external/http_transport"
-	tc "github.com/dysnix/predictkube-libs/external/types_convertation"
-	"github.com/dysnix/predictkube-proto/external/proto/commonproto"
-	pb "github.com/dysnix/predictkube-proto/external/proto/services"
 	"github.com/go-playground/validator/v10"
-	kedautil "github.com/kedacore/keda/v2/pkg/util"
 	"github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
@@ -31,6 +24,15 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/metrics/pkg/apis/external_metrics"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
+
+	libs "github.com/dysnix/predictkube-libs/external/configs"
+	pc "github.com/dysnix/predictkube-libs/external/grpc/client"
+	"github.com/dysnix/predictkube-libs/external/http_transport"
+	tc "github.com/dysnix/predictkube-libs/external/types_convertation"
+	"github.com/dysnix/predictkube-proto/external/proto/commonproto"
+	pb "github.com/dysnix/predictkube-proto/external/proto/services"
+
+	kedautil "github.com/kedacore/keda/v2/pkg/util"
 )
 
 const (
@@ -102,7 +104,6 @@ func (pks *PredictKubeScaler) setupClientConn() error {
 			Profiling: libs.Profiling{
 				Enabled: false,
 			},
-			IsDebugMode: true,
 			Single: &libs.Single{
 				Enabled: false,
 			},
