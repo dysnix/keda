@@ -195,6 +195,8 @@ func TestPredictKubeGetMetricSpecForScaling(t *testing.T) {
 }
 
 func TestPredictKubeGetMetrics(t *testing.T) {
+	grpcConf.Conn.Insecure = true
+
 	mockPredictServer, grpcServer := runMockGrpcPredictServer()
 	<-time.After(time.Second * 3)
 	defer func() {

@@ -2,6 +2,7 @@ package scalers
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"math"
@@ -14,13 +15,14 @@ import (
 	tc "github.com/dysnix/predictkube-libs/external/types_convertation"
 	"github.com/dysnix/predictkube-proto/external/proto/commonproto"
 	pb "github.com/dysnix/predictkube-proto/external/proto/services"
-	validator "github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator/v10"
 	kedautil "github.com/kedacore/keda/v2/pkg/util"
 	"github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
-	str2duration "github.com/xhit/go-str2duration/v2"
+	"github.com/xhit/go-str2duration/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	health "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/status"
 	"k8s.io/api/autoscaling/v2beta2"
@@ -36,10 +38,35 @@ const (
 )
 
 var (
-	mlEngineHost = "predictkube-dev.dysnix.org"
-	mlEnginePort = 8080
+	mlEngineHost = "api.predictkube.com"
+	mlEnginePort = 443
 
 	defaultStep = time.Minute * 5
+
+	grpcConf = &libs.GRPC{
+		Enabled:       true,
+		UseReflection: true,
+		Compression: libs.Compression{
+			Enabled: false,
+		},
+		Conn: &libs.Connection{
+			Host:            mlEngineHost,
+			Port:            uint16(mlEnginePort),
+			ReadBufferSize:  50 << 20,
+			WriteBufferSize: 50 << 20,
+			MaxMessageSize:  50 << 20,
+			Insecure:        false,
+			Timeout:         time.Second * 15,
+		},
+		Keepalive: &libs.Keepalive{
+			Time:    time.Minute * 5,
+			Timeout: time.Minute * 5,
+			EnforcementPolicy: &libs.EnforcementPolicy{
+				MinTime:             time.Minute * 20,
+				PermitWithoutStream: false,
+			},
+		},
+	}
 )
 
 type PredictKubeScaler struct {
@@ -67,30 +94,7 @@ type predictKubeMetadata struct {
 var predictKubeLog = logf.Log.WithName("predictkube_scaler")
 
 func (pks *PredictKubeScaler) setupClientConn() error {
-	clientOpt, err := pc.SetGrpcClientOptions(&libs.GRPC{
-		Enabled:       true,
-		UseReflection: true,
-		Compression: libs.Compression{
-			Enabled: false,
-		},
-		Conn: &libs.Connection{
-			Host:            mlEngineHost,
-			Port:            uint16(mlEnginePort),
-			ReadBufferSize:  50 << 20,
-			WriteBufferSize: 50 << 20,
-			MaxMessageSize:  50 << 20,
-			Insecure:        true,
-			Timeout:         time.Second * 15,
-		},
-		Keepalive: &libs.Keepalive{
-			Time:    time.Minute * 5,
-			Timeout: time.Minute * 5,
-			EnforcementPolicy: &libs.EnforcementPolicy{
-				MinTime:             time.Minute * 20,
-				PermitWithoutStream: false,
-			},
-		},
-	},
+	clientOpt, err := pc.SetGrpcClientOptions(grpcConf,
 		&libs.Base{
 			Monitoring: libs.Monitoring{
 				Enabled: false,
@@ -105,6 +109,14 @@ func (pks *PredictKubeScaler) setupClientConn() error {
 		},
 		pc.InjectPublicClientMetadataInterceptor(pks.metadata.apiKey),
 	)
+
+	if !grpcConf.Conn.Insecure {
+		clientOpt = append(clientOpt, grpc.WithTransportCredentials(
+			credentials.NewTLS(&tls.Config{
+				ServerName: mlEngineHost,
+			}),
+		))
+	}
 
 	if err != nil {
 		return err
