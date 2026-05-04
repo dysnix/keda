@@ -64,7 +64,7 @@ require (
 	github.com/beanstalkd/go-beanstalk v0.2.0
 	github.com/bradleyfalzon/ghinstallation/v2 v2.17.0
 	github.com/cloudevents/sdk-go/v2 v2.16.2
-	github.com/dysnix/predictkube-libs v0.0.4-0.20250415003622-40081ddd4983
+	github.com/dysnix/predictkube-libs v0.0.4-0.20260504154157-95bc1de9aded
 	github.com/dysnix/predictkube-proto v0.0.0-20250415003810-aa0af0a0019b
 	github.com/elastic/go-elasticsearch/v7 v7.17.10
 	github.com/expr-lang/expr v1.17.7
@@ -260,7 +260,6 @@ require (
 	github.com/googleapis/gax-go/v2 v2.16.0 // indirect
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674 // indirect
 	github.com/grafana/regexp v0.0.0-20250905093917-f7b3be9d1853 // indirect
-	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3 // indirect
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.7 // indirect
