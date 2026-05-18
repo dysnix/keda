@@ -64,7 +64,7 @@ require (
 	github.com/beanstalkd/go-beanstalk v0.2.0
 	github.com/bradleyfalzon/ghinstallation/v2 v2.17.0
 	github.com/cloudevents/sdk-go/v2 v2.16.2
-	github.com/dysnix/predictkube-libs v0.0.4-0.20260504154157-95bc1de9aded
+	github.com/dysnix/predictkube-libs v0.1.0
 	github.com/dysnix/predictkube-proto v0.0.0-20250415003810-aa0af0a0019b
 	github.com/elastic/go-elasticsearch/v7 v7.17.10
 	github.com/expr-lang/expr v1.17.7

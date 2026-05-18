@@ -579,7 +579,7 @@ github.com/dgryski/go-rendezvous
 # github.com/dnephin/pflag v1.0.7
 ## explicit; go 1.12
 github.com/dnephin/pflag
-# github.com/dysnix/predictkube-libs v0.0.4-0.20260504154157-95bc1de9aded
+# github.com/dysnix/predictkube-libs v0.1.0
 ## explicit; go 1.23.8
 github.com/dysnix/predictkube-libs/external/configs
 github.com/dysnix/predictkube-libs/external/enums
